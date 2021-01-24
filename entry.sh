@@ -33,23 +33,23 @@ case "$GAMETYPE" in
     "TTT")
         echo "Configuring TTT Server"
         game_type="terrortown"
-        workshop_collection="2120021421"
+        workshop_collection="2372649360"
         default_map="ttt_minecraftcity_v4" ;;
     "Prop")
         echo "Configuring PropHunt Server"
         game_type="prophunters"
-        workshop_collection="2120273717"
+        workshop_collection="2372656179"
         default_map="ph_lotparking" ;;
     # Needs adding
     "Murder")
         echo "Configuring Murder Server"
         game_type="murder"
         workshop_collection="2120021421"
-        default_map="" ;;
+        default_map="ttt_Clue_se" ;;
     "Homicide")
         echo "Configuring Homicide Server"
         game_type="homicide"
-        workshop_collection="2120176172"
+        workshop_collection="2372659912"
         default_map="ttt_Clue_se" ;;
     *)
         echo "No gametype was set so running sandbox"
@@ -67,6 +67,7 @@ bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
             +gamemode "$game_type" \
 			+map "$default_map" \
             +host_workshop_collection "$workshop_collection" \
+            +rcon_password "${RCON_PWD}"
 			+sv_setsteamaccount "${SRCDS_TOKEN}"
 
 

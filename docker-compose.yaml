@@ -10,3 +10,4 @@ services:
       - SRCDS_PORT=27015
       - SRCDS_TOKEN=0
       - GAMETYPE=TTT
+      - RCON_PWD=changeme

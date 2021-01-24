@@ -1,4 +1,12 @@
 A docker image for running a dedicated server for the game [Garry's Mod](https://store.steampowered.com/app/4000/Garrys_Mod/) with additional gamemodes. This Dockerfile uses [CM2Walki's](https://github.com/CM2Walki/) SteamCMD base image.
+# Map collection edits
+Below are the optional gamemodes alongside their respoective workshop collections. If you want to include a new map then you need to add it to that gamemode's collection.
+```console
+TTT - https://steamcommunity.com/sharedfiles/filedetails/?id=2372649360
+Prop - https://steamcommunity.com/sharedfiles/filedetails/?id=2372656179
+Murder - TBC
+Homicide - https://steamcommunity.com/sharedfiles/filedetails/?id=2372659912
+```
 
 # How to use this image
 ## Simple usage (recommended)
@@ -32,4 +40,5 @@ You can overwrite these values within the docker-compose file, below are the def
 SRCDS_PORT=27015 # The port on which the server communicates on
 SRCDS_TOKEN=0 # You will need this to be public
 GAMETYPE=TTT # Available options are TTT, Prop, Murder and Homicide
+RCON_PWD=changeme # The RCON password for the server
 ```
