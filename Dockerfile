@@ -18,18 +18,22 @@ ENV SRCDS_TOKEN=0
 ENV CONFIG_DIR "/config"
 ENV UPDATE_SCRIPT "${CONFIG_DIR}/${STEAMAPP}_update.txt"
 ENV MOUNT_CONFIG "${CONFIG_DIR}/mount.cfg"
+ENV HOME /home/gmoduser
 
-# Create user, directories and required game content
-RUN useradd -s /bin/false -u ${UID} gmoduser && \
+# Create user + directories
+RUN useradd -m -s /bin/false -u ${UID} gmoduser && \
     mkdir -vp ${CONFIG_DIR} /garrysmod /css /tf2 && \
-    steamcmd +login anonymous \
+    chown -vR gmoduser:gmoduser \
+        ${CONFIG_DIR} /garrysmod /css /tf2
+
+# Install required game content
+USER gmoduser
+RUN steamcmd +login anonymous \
         +force_install_dir /css \
         +app_update "232330" validate \
         +force_install_dir /tf2 \
         +app_update "232250" validate \
-        +quit && \
-    chown -Rv gmoduser:gmoduser \
-        ${CONFIG_DIR} /garrysmod /css /tf2
+        +quit
 
 # Copy scripts/config in
 COPY --chown=gmoduser entry.sh /entry.sh
@@ -37,7 +41,6 @@ COPY --chown=gmoduser mount.cfg ${MOUNT_CONFIG}
 COPY --chown=gmoduser garrysmod_update.txt ${UPDATE_SCRIPT}
 
 # I/O
-USER gmoduser
 VOLUME /garrysmod
 WORKDIR /garrysmod
 EXPOSE 27015/udp

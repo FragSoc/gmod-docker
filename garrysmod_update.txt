@@ -1,6 +1,6 @@
 @ShutdownOnFailedCommand 1
 @NoPromptForPassword 1
 login anonymous
-force_install_dir /steamapps/garrysmod
+force_install_dir /garrysmod
 app_update 4020
 quit
