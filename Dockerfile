@@ -21,7 +21,7 @@ ENV MOUNT_CONFIG "${CONFIG_DIR}/mount.cfg"
 ENV HOME /home/gmoduser
 
 # Create user + directories
-RUN useradd -m -s /bin/false -u ${UID} gmoduser && \
+RUN useradd -m -s /bin/false -u ${UID} -d ${HOME} gmoduser && \
     mkdir -vp ${CONFIG_DIR} /garrysmod /css /tf2 && \
     chown -vR gmoduser:gmoduser \
         ${CONFIG_DIR} /garrysmod /css /tf2

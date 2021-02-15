@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 
 # Update/install gmod itself
-bash steamcmd +login anonymous \
-    +force_install_dir /garrysmod \
-    +app_update 4020 validate \
-    +quit
+bash steamcmd +runscript "${UPDATE_SCRIPT}"
 
 # Mount CSS and TF2
-ln -s "${MOUNT_CONFIG}" /garrysmod/cfg/mount.cfg
+ln -s "${MOUNT_CONFIG}" /garrysmod/garrysmod/cfg/mount.cfg
 
 # Run GMOD, passing commands through
 ./srcds_run -game garrysmod -console -autoupdate \
-    -steam_dir "${STEAMCMDDIR}" \
+    -steam_dir "${HOME}/.steam" \
     -steamcmd_script "${UPDATE_SCRIPT}" \
     -usercon \
     -port 27015 \
