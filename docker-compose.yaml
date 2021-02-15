@@ -1,13 +1,16 @@
 version: "3"
-   
+
 services:
   gmod:
     build: .
-    volumes:
-      - ./garrysmod-data/:/home/steam/garrysmod-dedicated/
-    network_mode: "host"
-    environment: 
-      - SRCDS_PORT=27015
+    environment:
       - SRCDS_TOKEN=0
-      - GAMETYPE=TTT
+      - GAMETYPE=terrortown
       - RCON_PWD=changeme
+    ports:
+      - "27015:27015/udp"
+    volumes:
+      - garrysmod-data:/garrysmod
+
+volumes:
+  garrysmod-data:
