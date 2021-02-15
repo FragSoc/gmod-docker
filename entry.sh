@@ -4,7 +4,7 @@
 bash steamcmd +runscript "${UPDATE_SCRIPT}"
 
 # Mount CSS and TF2
-ln -s "${MOUNT_CONFIG}" /garrysmod/garrysmod/cfg/mount.cfg
+cp -v "${MOUNT_CONFIG}" /garrysmod/garrysmod/cfg/mount.cfg
 
 # Run GMOD, passing commands through
 ./srcds_run -game garrysmod -console -autoupdate \
