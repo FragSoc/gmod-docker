@@ -1,7 +1,7 @@
 #####################################################################
 # Dockerfile that builds a GMOD Gameserver - modified from CS Scrim #
 #####################################################################
-FROM cm2network/steamcmd:root
+FROM steamcmd/steamcmd
 MAINTAINER Ryan Smith <fragsoc@yusu.org>
 MAINTAINER Laura Demkowicz-Duffy <fragsoc@yusu.org>
 
