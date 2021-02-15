@@ -2,43 +2,45 @@
 # Dockerfile that builds a GMOD Gameserver - modified from CS Scrim #
 #####################################################################
 FROM cm2network/steamcmd:root
+MAINTAINER Ryan Smith <fragsoc@yusu.org>
+MAINTAINER Laura Demkowicz-Duffy <fragsoc@yusu.org>
 
-ENV STEAMAPPID 4020
-ENV STEAMAPP garrysmod
-ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-ENV GAMETYPE "TTT"
+ARG UID=999
 
-COPY entry.sh ${HOMEDIR}/entry.sh
-RUN set -x \
-	&& mkdir -p "${STEAMAPPDIR}" \
-	&& { \
-		echo '@ShutdownOnFailedCommand 1'; \
-		echo '@NoPromptForPassword 1'; \
-		echo 'login anonymous'; \
-		echo 'force_install_dir '"${STEAMAPPDIR}"''; \
-		echo 'app_update '"${STEAMAPPID}"''; \
-		echo 'quit'; \
-	   } > "${HOMEDIR}/${STEAMAPP}_update.txt" \
-    && { \
-		echo '"mountcfg"'; \
-		echo '{'; \
-		echo '"cstrike"	"'${HOMEDIR}'/css/cstrike"'; \
-		echo '"tf"	"'${HOMEDIR}'/tf2/tf"'; \
-		echo '}'; \
-	   } > "${HOMEDIR}/mount.cfg" \
-	&& chmod +x "${HOMEDIR}/entry.sh" \
-	&& chown -R "${USER}:${USER}" "${HOMEDIR}/entry.sh" "${STEAMAPPDIR}" "${HOMEDIR}/${STEAMAPP}_update.txt" \
-	&& rm -rf /var/lib/apt/lists/* 
-	
-ENV SRCDS_PORT=27015
+# Server defaults
+ENV GAMETYPE "sandbox"
+ENV DEFAULT_MAP "gm_flatgrass"
+ENV WORKSHOP_COLLECTION "0"
+ENV RCON_PWD "changeme"
+ENV STEAMAPP "garrysmod"
 ENV SRCDS_TOKEN=0
 
-USER ${USER}
+# Directory layout
+ENV STEAMAPPDIR "/${STEAMAPP}"
+ENV CONFIG_DIR "/config"
+ENV UPDATE_SCRIPT "${CONFIG_DIR}/${STEAMAPP}_update.txt"
+ENV MOUNT_CONFIG "${CONFIG_DIR}/mount.cfg"
 
+# Create user, directories and required game content
+RUN useradd -s /bin/false -u ${UID} gmoduser && \
+    mkdir -p ${CONFIG_DIR} ${STEAMAPPDIR} /css /tf2 && \
+    steamcmd +login anonymous \
+        +force_install_dir /css \
+        +app_update "232330" validate \
+        +force_install_dir /tf2 \
+        +app_update "232250" validate \
+        +quit && \
+    chown -R gmoduser:gmoduser \
+        ${CONFIG_DIR} ${STEAMAPPDIR} /css /tf2
+
+# Copy scripts/config in
+COPY --chown=gmoduser entry.sh /entry.sh
+COPY --chown=gmoduser mount.cfg ${MOUNT_CONFIG}
+COPY --chown=gmoduser garrysmod_update.txt ${UPDATE_SCRIPT}
+
+# I/O
+USER gmoduser
 VOLUME ${STEAMAPPDIR}
-
-WORKDIR ${HOMEDIR}
-
-EXPOSE ${SRCDS_PORT}/udp ${SRCDS_PORT}/tcp
-
-CMD ["bash", "entry.sh"]
+WORKDIR ${STEAMAPPDIR}
+EXPOSE 27015/udp
+ENTRYPOINT ["bash", "/entry.sh"]
