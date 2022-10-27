@@ -2,8 +2,7 @@
 set -euxo pipefail
 
 # Run GMOD, passing commands through
-./srcds_run -game garrysmod -console -autoupdate \
-    -usercon \
+./srcds_run -game garrysmod -console -usercon \
     -port 27015 \
     +gamemode "${GAMETYPE}" \
     +map "${DEFAULT_MAP}" \
