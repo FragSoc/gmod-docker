@@ -1,44 +1,49 @@
 #####################################################################
 # Dockerfile that builds a GMOD Gameserver - modified from CS Scrim #
 #####################################################################
-FROM cm2network/steamcmd:root
+FROM steamcmd/steamcmd
+MAINTAINER Ryan Smith <fragsoc@yusu.org>
+MAINTAINER Laura Demkowicz-Duffy <fragsoc@yusu.org>
 
-ENV STEAMAPPID 4020
-ENV STEAMAPP garrysmod
-ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-ENV GAMETYPE "TTT"
+ARG UID=999
 
-COPY entry.sh ${HOMEDIR}/entry.sh
-RUN set -x \
-	&& mkdir -p "${STEAMAPPDIR}" \
-	&& { \
-		echo '@ShutdownOnFailedCommand 1'; \
-		echo '@NoPromptForPassword 1'; \
-		echo 'login anonymous'; \
-		echo 'force_install_dir '"${STEAMAPPDIR}"''; \
-		echo 'app_update '"${STEAMAPPID}"''; \
-		echo 'quit'; \
-	   } > "${HOMEDIR}/${STEAMAPP}_update.txt" \
-    && { \
-		echo '"mountcfg"'; \
-		echo '{'; \
-		echo '"cstrike"	"'${HOMEDIR}'/css/cstrike"'; \
-		echo '"tf"	"'${HOMEDIR}'/tf2/tf"'; \
-		echo '}'; \
-	   } > "${HOMEDIR}/mount.cfg" \
-	&& chmod +x "${HOMEDIR}/entry.sh" \
-	&& chown -R "${USER}:${USER}" "${HOMEDIR}/entry.sh" "${STEAMAPPDIR}" "${HOMEDIR}/${STEAMAPP}_update.txt" \
-	&& rm -rf /var/lib/apt/lists/* 
-	
-ENV SRCDS_PORT=27015
+# Server defaults
+ENV GAMETYPE "sandbox"
+ENV DEFAULT_MAP "gm_flatgrass"
+ENV WORKSHOP_COLLECTION "0"
+ENV RCON_PWD "changeme"
 ENV SRCDS_TOKEN=0
 
-USER ${USER}
+# Directory layout
+ENV CONFIG_DIR "/config"
+ENV UPDATE_SCRIPT "${CONFIG_DIR}/${STEAMAPP}_update.txt"
+ENV MOUNT_CONFIG "${CONFIG_DIR}/mount.cfg"
+ENV HOME /home/gmoduser
 
-VOLUME ${STEAMAPPDIR}
+# Create user + directories
+RUN useradd -m -s /bin/false -u ${UID} -d ${HOME} gmoduser && \
+    mkdir -vp ${CONFIG_DIR} /garrysmod /css /tf2 && \
+    chown -vR gmoduser:gmoduser \
+        ${CONFIG_DIR} /garrysmod /css /tf2
 
-WORKDIR ${HOMEDIR}
+# Install required game content
+USER gmoduser
+RUN steamcmd +force_install_dir /css \
+        +login anonymous \
+        +app_update "232330" validate \
+        +quit
+RUN steamcmd +force_install_dir /tf2 \
+        +login anonymous \
+        +app_update "232250" validate \
+        +quit
 
-EXPOSE ${SRCDS_PORT}/udp ${SRCDS_PORT}/tcp
+# Copy scripts/config in
+COPY --chown=gmoduser entry.sh /entry.sh
+COPY --chown=gmoduser mount.cfg ${MOUNT_CONFIG}
+COPY --chown=gmoduser garrysmod_update.txt ${UPDATE_SCRIPT}
 
-CMD ["bash", "entry.sh"]
+# I/O
+VOLUME /garrysmod
+WORKDIR /garrysmod
+EXPOSE 27015/udp
+ENTRYPOINT ["bash", "/entry.sh"]

@@ -1,1 +1,4 @@
-garrysmod-data
+Dockerfile
+README.md
+.dockerignore
+docker-compose.yaml
