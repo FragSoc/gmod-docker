@@ -36,11 +36,9 @@ RUN steamcmd +force_install_dir /tf2 \
         +login anonymous \
         +app_update "232250" validate \
         +quit
-RUN steamcmd +@ShutdownOnFailedCommand 1 \
-        +@NoPromptForPassword 1 \
-        +force_install_dir /garrysmod \
+RUN steamcmd +force_install_dir /garrysmod \
         +login anonymous \
-        +app_update 4020 validate \
+        +app_update "4020" validate \
         +quit
 
 # Copy scripts/config in
