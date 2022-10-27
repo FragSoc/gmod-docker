@@ -36,14 +36,18 @@ RUN steamcmd +force_install_dir /tf2 \
         +login anonymous \
         +app_update "232250" validate \
         +quit
+RUN steamcmd +@ShutdownOnFailedCommand 1 \
+        +@NoPromptForPassword 1 \
+        +force_install_dir /garrysmod \
+        +login anonymous \
+        +app_update 4020 validate \
+        +quit
 
 # Copy scripts/config in
 COPY --chown=gmoduser entry.sh /entry.sh
-COPY --chown=gmoduser mount.cfg ${MOUNT_CONFIG}
-COPY --chown=gmoduser garrysmod_update.txt ${UPDATE_SCRIPT}
+COPY --chown=gmoduser mount.cfg /garrysmod/garrysmod/cfg/mount.cfg
 
 # I/O
-VOLUME /garrysmod
 WORKDIR /garrysmod
 EXPOSE 27015/udp
 ENTRYPOINT ["bash", "/entry.sh"]
