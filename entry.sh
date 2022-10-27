@@ -3,7 +3,6 @@ set -euxo pipefail
 
 # Run GMOD, passing commands through
 ./srcds_run -game garrysmod -console -autoupdate \
-    -steam_dir "${HOME}/.steam" \
     -usercon \
     -port 27015 \
     +gamemode "${GAMETYPE}" \
