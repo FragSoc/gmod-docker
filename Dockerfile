@@ -28,10 +28,12 @@ RUN useradd -m -s /bin/false -u ${UID} -d ${HOME} gmoduser && \
 
 # Install required game content
 USER gmoduser
-RUN steamcmd +login anonymous \
-        +force_install_dir /css \
+RUN steamcmd +force_install_dir /css \
+        +login anonymous \
         +app_update "232330" validate \
-        +force_install_dir /tf2 \
+        +quit
+RUN steamcmd +force_install_dir /tf2 \
+        +login anonymous \
         +app_update "232250" validate \
         +quit
 
