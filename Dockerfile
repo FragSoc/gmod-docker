@@ -39,6 +39,7 @@ RUN steamcmd +force_install_dir /tf2 \
 RUN steamcmd +force_install_dir /garrysmod \
         +login anonymous \
         +app_update "4020" validate \
+        +app_update "1007" validate \
         +quit
 
 # Copy scripts/config in
